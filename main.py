@@ -60,7 +60,7 @@ fermeture_forme=0
 #options
 langues_dispo={"English":"EN","Francais":"FR"}
 langue="FR"
-translations = fct.load_translations("C:\\Users\Morgane\Documents\Boite_generator\dict_langues.json")
+translations = fct.load_translations("dict_langues.json")
 projet="projet"
 save_path=""
 #------------------------------------------------------------------------------------------------------

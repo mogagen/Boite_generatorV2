@@ -1,0 +1,50 @@
+{
+    "FR": {
+		"projet":"Nom du projet",
+        "dim": ["longueur", "largeur", "hauteur"],
+        "ep": ["Epaisseur des parois", "Epaisseur du couvercle"],
+        "material": "Dimensions du matériel de base",
+        "int_ext": ["dimensions externes", "dimensions internes"],
+        "enter": "Entrez une valeur",
+        "format": "Les dimensions données sont les :",
+		"dimens":"Dimensions principales",
+		"recap":"Recapitulatif",
+		"next":"Suivant",
+		"sep":["Nombre de colonnes","Nombres de lignes","Les colonnes sont parallèles à la longueur et les lignes à la largeur"],
+		"pieces":["BASE","COTE_LONG","COTE_LARGE_fermé","COTE_LARGE_ouvert","COTE_LARGE","COUVERCLE","SEPARATION_LONG","SEPARATION_LARGE"],
+		"try" :"Valeur(s) invalide(s)",
+		"lid":"Paramètres du couvercle",
+		"ferm_forme":["Demi-cercle","Rectangle (ruban)","Ficelle","Sans"],
+		"ferm_type":["Glissière","Dessus"],
+		"save":["Choisir le chemin de sauvegarde", "Choisir", "Pas de chemin choisi"],
+		"generate": "Générer les fichiers",
+		"list_part":"Liste des pièces",
+		"nb":"Nombres de pièces",
+		"notes":["Notes"]
+		
+    },
+    "EN": {
+		"projet": "Project name",
+        "dim": ["length", "width", "height"],
+        "ep": ["Thickness of box walls", "Lid thickness"],
+        "material": "Dimensions of base material",
+        "int_ext": ["external dimensions", "internal dimensions"],
+        "enter": "Enter value",
+        "format": "Dimensions given are the :",
+		"dimens":"Main dimensions",
+		"recap":"Recap",
+		"next":"Next",
+		"sep":["Number of columns","Number of rows","Columns are parallel to the length and rows to the width"],
+		"pieces":["BASE","SIDE_LENGTH","SIDE_WIDTH_closed","SIDE_WIDTH_open","SIDE_WIDTH","LID","SEPARATION_LENGTH","SEPARATION_WIDTH"],
+		"try": "Invalid value(s)",
+		"lid" :"Lid parameters",
+		"ferm_type":["Slide","Top"],
+		"ferm_forme":["Half-circle","Rectangle (ribbon)","String","Nothing"],
+		"save":["Choose save path","Choose","No path selected"],
+		"generate" :"Generate files",
+		"list_part":"Parts list",
+		"nb":"Number of parts",
+		"notes":["Comments"]
+    }
+}
+

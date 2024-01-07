@@ -17,7 +17,7 @@ import json
 #-------------------------------------------------------------------------------------------------------
 #Variables
 default_values=fct.load_json("./data/default_values.json")
-translations = fct.load_json("data/dict_langues.json")
+translations = fct.load_json("./data/dict_langues.json")
 #longueur - length (mm)
 lo = default_values["lo"]
 #largeur - width (mm)
@@ -476,7 +476,6 @@ class MyGUI :
             "rows" : rows,
             "name_boite" : name_boite,
             "namedir" : namedir,
-            "namedir2" : namedir2,
             "recap":recap,
             "fermeture_type": fermeture_type,
             "fermeture_forme":fermeture_forme

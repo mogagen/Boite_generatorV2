@@ -1,0 +1,2 @@
+#ignore the temporary json file that stores the user values of the current project
+data/current_values.json

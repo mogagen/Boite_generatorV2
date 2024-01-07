@@ -1,4 +1,9 @@
-#librairie de fonctions usuelles
+###########################################################################################
+#Boite generator (Box generator)                                                          #
+#Moga Gen - created dec 2023                                                              #
+#last modified 07.01.2024                                                                 #
+#librairie de fonctions usuelles                                                          #
+###########################################################################################
 
 import json
 import matplotlib.pyplot as plt
@@ -7,9 +12,8 @@ from matplotlib.path import Path
 import numpy as np
 from stl import mesh
 
-
+#-----------------------------------------------------------------------------------------
 # Languages
-
 def load_translations(filename):
     """
     Load translations from a JSON file.
@@ -28,7 +32,26 @@ def load_translations(filename):
     except json.JSONDecodeError:
         print(f"Erreur de décodage JSON dans '{filename}'. Assurez-vous qu'il est bien formaté.")
         return {}
+def load_json(filename) :
+    """
+        Load data from a JSON file.
+        Args:
+        - filename (str): The name of the JSON file to load.
+        Returns:
+        - translations (dict): Translations loaded from the file.
+        """
+    try:
+        with open(filename, "r", encoding="utf-8") as file:
+            translations = json.load(file)
+            return translations
+    except FileNotFoundError:
+        print(f"Le fichier de traductions '{filename}' n'a pas été trouvé.")
+        return {}
+    except json.JSONDecodeError:
+        print(f"Erreur de décodage JSON dans '{filename}'. Assurez-vous qu'il est bien formaté.")
+        return {}
 
+#language
 def get_text(key, translations, language):
     """
     Access translation text based on a key, language, and translations dictionary.
@@ -45,7 +68,6 @@ def get_text(key, translations, language):
         return f"Texte introuvable pour la clé '{key}' en langue '{language}'"
 #-------------------------------------------------------------------------------------------------
 # Calculations for drawings
-
 def calc_encoche(ltot, ep, enc_def):
     """
     Calculate the dimensions of notches (encoche) to achieve uniform size.
@@ -163,7 +185,6 @@ def configure_path_pdf(name,w, h):
 
 #---------------------------------------------------------------------------------------------
 #STL functions
-
 def create_parallel_vertices(x, y, z, width, length, height):
     """
     Create the vertices list for a cube given its dimensions and the coordinates of the rear top right corner.
@@ -175,7 +196,9 @@ def create_parallel_vertices(x, y, z, width, length, height):
     - length (float): Length of the cube (parallel to the x-axis).
     - height (float): Height of the cube (parallel to the z-axis).
     Returns:
-    - vertices (np.ndarray): Array containing the vertices of the cube.
+    [vertices,faces] with :
+    - vertices (np.ndarray): Array containing the vertices of the parallelepiped.
+    - faces (np.ndarray) : Array containing the list to create the faces of the parallelepiped
     """
     # Calculate the coordinates of the other corners based on the rear top right corner (x, y, z)
     front_bottom_left = [x - length, y - width, z]
@@ -198,20 +221,15 @@ def create_parallel_vertices(x, y, z, width, length, height):
         rear_top_right,
         rear_top_left
     ])
-
-    return vertices
-
-def create_parallel_faces():
-    """
-    Create the faces list for a parallelepiped (rectangular prism) with triangular faces given its vertices.
-    """
+    #define the faces of the parallepiped with the order of vertices
     faces = np.array([[0, 2, 3], [0, 2, 1],
                       [1, 2, 6], [1, 6, 5],
                       [4, 6, 5], [4, 6, 7],
                       [0, 4, 7], [0, 3, 7],
                       [3, 7, 6], [3, 6, 2],
                       [0, 4, 5], [0, 5, 1]])
-    return faces
+
+    return [vertices,faces]
 
 def fuse_mesh(mesh1, mesh2):
     """
@@ -261,8 +279,9 @@ def create_parallel_volume(x, y, z, width, length, height):
     - parallelepiped (mesh.Mesh): Mesh representing the parallelepiped.
     """
     # Create the vertices and faces
-    vertices = create_parallel_vertices(x, y, z, width, length, height)
-    faces = create_parallel_faces()
+    parallel_vol = create_parallel_vertices(x, y, z, width, length, height)
+    vertices = parallel_vol[0]
+    faces = parallel_vol[1]
     # Create the mesh
     parallelepiped = mesh.Mesh(np.zeros(faces.shape[0], dtype=mesh.Mesh.dtype))
     for i, face in enumerate(faces):

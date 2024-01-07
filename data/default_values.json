@@ -1,0 +1,18 @@
+{
+  "langues_dispo":{"English":"EN","Francais":"FR"},
+  "langue": "FR",
+  "lo": 370,
+  "la" : 330,
+  "h" : 65,
+  "ep" : 4,
+  "eplex" : 4,
+  "ep_fix": 2,
+  "side_larg": 10,
+  "side_ling": 15,
+  "separ_check": false,
+  "columns" : 1,
+  "rows" : 1,
+  "fermeture_type": 0,
+  "fermeture_forme" : 0,
+  "projet": "projet"
+}

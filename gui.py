@@ -77,6 +77,16 @@ class MyGUI :
         button = tk.Button(lang, text="OK", command=lambda:[lang_button_click(),lang.destroy(),self.param()])
         button.pack()
     #---------------------------------------------------------------------------------
+    #demander le type de fermeture
+    #si vis: demander lequel et si il ça ne doit pas dépasser
+    #avec ou sans séparations + avec ou sans glissière
+    #forme de la poignée pour le couvercle
+    #donner les dimensions extérieures/internes de la boite ou donner la largeur des colonnes et des lignes
+    #demander les dimensions du matériel de base
+    #selon le choix précédent
+        #demander le nombre de colonnes et de lignes et leurs largeurs + demander la hauteur int/ext
+        #demander les dimensions externes/internes
+    #---------------------------------------------------------------------------------
     #Paramètres des dimensions
     def param(self) :
         # Parameters frame
@@ -283,7 +293,6 @@ class MyGUI :
         #titre
         separ_title = tk.Label(separ, text="Separations")
         separ_title.grid(row=row)
-        row+=1
         #notes sur les colonnes et lignes
         sep_tran=fct.get_text("sep",translations,langue)
         try_again=fct.get_text("try",translations,langue)
@@ -479,6 +488,10 @@ class MyGUI :
             "fermeture_type": fermeture_type,
             "fermeture_forme":fermeture_forme
         }
+        #vis=0 pour pas de vis, 1 vis invisible,2 pour dépasse
+        #couv_ras=false default couvercle à ras, true offset pour le couvercle
+        #sep_check=false/true (glissière)
+        #glissiere(slide)=false/true
         #temp json file storing the values for this instance
         file="./data/current_values.json"
         #open json file for writing

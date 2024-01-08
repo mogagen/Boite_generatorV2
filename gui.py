@@ -426,7 +426,6 @@ class MyGUI :
             # Check if the user selected a directory or canceled the dialog
             if save_path:
                 # User selected a directory, you can use 'save_path' for saving files there
-                print("Selected directory:", save_path)
                 save_check = tk.Label(save_directory,text=save_path)
                 save_check.pack()
                 save_button.destroy()

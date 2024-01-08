@@ -5,7 +5,6 @@
 #Générer fichiers svg pour découpe laser + stl pour impression 3d pour les fermetures     #
 #Generate SVG files for laser cutting and STLs for 3D-printing                            #
 ###########################################################################################
-import os
 from PIL import Image
 import custom_lib as fct
 import matplotlib.pyplot as plt
@@ -330,7 +329,6 @@ def generate_files():
         if rows>1 :
             cote_lo_vertices+=lo_haut2
         cote_lo_vertices+=h_lo_left
-    print(cote_lo_vertices)
     #..............................................
     #COTES LARGEURS
     '''

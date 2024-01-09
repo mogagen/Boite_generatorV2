@@ -1,5 +1,6 @@
 {
     "FR": {
+		"intro": "Options de la boite",
 		"projet":"Nom du projet",
         "dim": ["longueur", "largeur", "hauteur"],
         "ep": ["Epaisseur des parois", "Epaisseur du couvercle"],
@@ -15,7 +16,7 @@
 		"try" :"Valeur(s) invalide(s)",
 		"lid":"Paramètres du couvercle",
 		"ferm_forme":["Demi-cercle","Rectangle (ruban)","Ficelle","Sans"],
-		"ferm_type":["Glissière","Dessus"],
+		"ferm_type":["Glissière","Posé dessus","Vissé avec vis noyée","Vissé simple"],
 		"save":["Choisir le chemin de sauvegarde", "Choisir", "Pas de chemin choisi"],
 		"generate": "Générer les fichiers",
 		"list_part":"Liste des pièces",
@@ -24,6 +25,7 @@
 		
     },
     "EN": {
+		"intro": "Box options",
 		"projet": "Project name",
         "dim": ["length", "width", "height"],
         "ep": ["Thickness of box walls", "Lid thickness"],
@@ -38,7 +40,7 @@
 		"pieces":["BASE","SIDE_LENGTH","SIDE_WIDTH_closed","SIDE_WIDTH_open","SIDE_WIDTH","LID","SEPARATION_LENGTH","SEPARATION_WIDTH"],
 		"try": "Invalid value(s)",
 		"lid" :"Lid parameters",
-		"ferm_type":["Slide","Top"],
+		"ferm_type":["Slide","Set on top","Sunken screws","Simple screws"],
 		"ferm_forme":["Half-circle","Rectangle (ribbon)","String","Nothing"],
 		"save":["Choose save path","Choose","No path selected"],
 		"generate" :"Generate files",

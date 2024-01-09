@@ -77,15 +77,59 @@ class MyGUI :
         button = tk.Button(lang, text="OK", command=lambda:[lang_button_click(),lang.destroy(),self.param()])
         button.pack()
     #---------------------------------------------------------------------------------
-    #demander le type de fermeture
-    #si vis: demander lequel et si il ça ne doit pas dépasser
-    #avec ou sans séparations + avec ou sans glissière
-    #forme de la poignée pour le couvercle
-    #donner les dimensions extérieures/internes de la boite ou donner la largeur des colonnes et des lignes
-    #demander les dimensions du matériel de base
-    #selon le choix précédent
-        #demander le nombre de colonnes et de lignes et leurs largeurs + demander la hauteur int/ext
-        #demander les dimensions externes/internes
+    def layer1(self):
+        layer1_frame=ttk.Frame(self.root)
+        layer1_frame.pack()
+        options=fct.get_text("ferm_type",translations,langue)
+        #fonctions des boutons de la couche
+        def click_details(type) :
+            details=tk.Toplevel
+            details.pack.geometry('500x500+420+75')
+            details.title("Boite Generator")
+            details.resizable((False, False))
+            im_path="./images/32_fermeture_type"+str(type)+"details_"+langue+".jpg"
+            image = Image.open(im_path)
+            image = image.resize((450,300))  # Resize the image
+            photo = ImageTk.PhotoImage(image)
+
+            label = tk.Label(details, image=photo)
+            label.image = photo  # Store the reference to prevent garbage collection
+            label.pack()
+            details.mainloop()
+        #choix du type de fermeture
+        selected_option=tk.IntVar()
+        images=[]
+        for i in range(0,4):
+            image_path="./images/54_fermeture_type"+str(i)+".jpg"
+            image = Image.open(image_path)
+            image = image.resize((140, 112))
+            image = ImageTk.PhotoImage(image)
+            label=ttk.Label(layer1_frame,image=image)
+            label.grid(row=0,columns=i+1)
+        for i,option in enumerate(options) :
+            radio_button = ttk.Radiobutton(layer1_frame, text=option, variable=selected_option, value=i,)
+            #radio_button.image = images[i]
+            #radio_button.config(image=images[i], compound="left")
+            radio_button.grid(row=1,columns=i+1)
+            #radio_button.pack(side="left")
+        #details
+        #button_detail2=tk.Button(layer1_frame,text="Details",command=lambda:[click_details(2)])
+    #---------------------------------------------------------------------------------
+    def parameters_choice(self):
+        param_choice=tk.Frame(self.root,borderwidth=1,relief="solid")
+        param_choice.pack(padx=10,pady=10)
+        choice_label=tk.Label(param_choice,text=fct.get_text("intro",translations,langue))
+        choice_label.pack()
+        self.layer1()
+        #demander le type de fermeture
+        #si vis: demander lequel et si il ça ne doit pas dépasser
+        #avec ou sans séparations + avec ou sans glissière
+        #forme de la poignée pour le couvercle
+        #donner les dimensions extérieures/internes de la boite ou donner la largeur des colonnes et des lignes
+        #demander les dimensions du matériel de base
+        #selon le choix précédent
+            #demander le nombre de colonnes et de lignes et leurs largeurs + demander la hauteur int/ext
+            #demander les dimensions externes/internes
     #---------------------------------------------------------------------------------
     #Paramètres des dimensions
     def param(self) :

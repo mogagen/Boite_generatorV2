@@ -55,6 +55,8 @@ projet=default_values["projet"]
 width=1500
 height=750
 centered=0
+#
+title_font=("Arial",14)
 #------------------------------------------------------------------------------------------------------
 def start_gui():
     # main window
@@ -68,7 +70,7 @@ def start_gui():
         centered=int((screen_width-width)/2)
     if screen_height<height :
         height=screen_height-40
-    root.geometry('1000x750+420+40')
+    #root.geometry('1000x750+420+40')
     root.geometry(f"{width}x{height}+{centered}+40")
     root.title("Boite Generator")
     root.resizable(False, False)
@@ -82,10 +84,23 @@ class MyGUI :
         self.langue_choice()
     def langue_choice(self) :
         #Langues
-        lang=tk.Frame(self.root, borderwidth=1, relief="solid")
-        lang.pack(padx=10, pady=10, fill="x", expand=True)
-        # Create a label
-        label = tk.Label(lang, text="Langage:")
+        lang=tk.Frame(self.root)
+        lang.pack(padx=10, pady=50, fill="x")
+        #images de titre
+        global width
+        # Define the new width and height for your image
+        new_width = width-500
+        new_height = int(new_width/2.5)
+        # Load the GIF image using tkinter's PhotoImage
+        image = PILImage.open("./images/125_title_box.png")
+        resized_image = image.resize((new_width, new_height), PILImage.LANCZOS)
+        photo = ImageTk.PhotoImage(resized_image)
+        label = tk.Label(lang, image=photo,relief=tk.SOLID,borderwidth=1)
+        label.pack()
+        #label.config(relief=tk.SOLID,borderwidth=1)
+        label.image = photo
+        # titre sélection langue
+        label = tk.Label(lang, text="Langage:",font=title_font)
         label.pack()
         # Create a Combobox for language selection with keys from langues_dispo
         lang_dropdown = ttk.Combobox(lang, values=list(langues_dispo.keys()))
@@ -99,28 +114,35 @@ class MyGUI :
         button = tk.Button(lang, text="OK", command=lambda:[lang_button_click(),lang.destroy(),self.project_name()])
         button.pack()
     def project_name(self):
+        projet_frame=tk.Frame(self.root)
+        projet_frame.grid(column=0,row=0)
+        #Project_name
+        proj_title = fct.get_text("projet", translations, langue)
+        proj_name_label=tk.Label(projet_frame,text=proj_title,font=title_font)
+        proj_name_label.pack()
+        #
+        proj_name_var=tk.StringVar()
+        proj_name_wid=tk.Entry(projet_frame,textvariable=proj_name_var)
+        proj_name_wid.pack()
+        #
         def click() :
             global projet
             projet =proj_name_var.get()
             ok_button.destroy()
             proj_name_wid["state"] = "readonly"
-            checkmark_label = tk.Label(self.root,text="✓", font=("Arial", 16), fg="green")
+            checkmark_label = tk.Label(projet_frame,text="✓", font=("Arial", 16), fg="green")
             checkmark_label.pack()
-
-        #Project_name
-        proj_title = fct.get_text("projet", translations, langue)
-        proj_name_label=tk.Label(self.root,text=proj_title)
-        proj_name_label.pack()
-        proj_name_var=tk.StringVar()
-        proj_name_wid=tk.Entry(self.root,textvariable=proj_name_var)
-        proj_name_wid.pack()
+            #nexttitle
+            choice_label = tk.Label(projet_frame, text=fct.get_text("intro", translations, langue), font=title_font)
+            choice_label.pack()
         #ok_button
-        ok_button=tk.Button(self.root,text="OK",command=lambda:[click(),self.parameters_choice_lay0()])
+        ok_button=tk.Button(projet_frame,text="OK",command=lambda:[click(),self.layer1()])
         ok_button.pack()
+    #-------------------------------------------------------------------------------
     #next/previous button
     def parameters_navigation(self,current_layer):
         nav_frame=tk.Frame(self.root,relief="solid",highlightbackground="grey",highlightcolor="grey", highlightthickness=1)
-        nav_frame.pack(expand=True,fill="x",padx=10)
+        nav_frame.grid(column=0,row=current_layer+1)
         #get translations
         nav=fct.get_text("next",translations,langue)
         #Previous button
@@ -137,7 +159,7 @@ class MyGUI :
         previous_button.grid(column=0,row=0,sticky="w")
         if current_layer<=1 :
             previous_button.config(state="disabled")
-        next_button=tk.Button(nav_frame,text=nav[0],command=lambda:[next_click()])
+        next_button=tk.Button(nav_frame,text=nav[0],command=lambda:[nav_frame.destroy(),next_click()])
         if current_layer<5 :
             next_button.grid(column=1,row=0,sticky="e")
         else :
@@ -148,11 +170,9 @@ class MyGUI :
     def get_layer(self,layer):
         if layer== 1 :
             self.layer1()
-        elif layer ==1.5 :
-            self.layer1_5()
-        elif layer ==2 :
+        elif layer == 2 :
             self.layer2()
-        elif layer ==3 :
+        elif layer == 3 :
             self.layer3()
         elif layer == 4 :
             self.layer4()
@@ -162,61 +182,19 @@ class MyGUI :
             print("no layer"+str(layer))
     #---------------------------------------------------------------------------------
     #Selections des paramètres
-    def parameters_choice_lay0(self):
-        param_choice=tk.Frame(self.root,borderwidth=1,relief="solid")
-        param_choice.pack(padx=10,pady=10)
-        choice_label=tk.Label(param_choice,text=fct.get_text("intro",translations,langue))
-        choice_label.pack()
-        # demander le type de fermeture
-        self.layer1()
-        #layer1_5 : si vis à ras: si il ça ne doit pas dépasser
-        #layer2 :avec ou sans séparations +
-        #layer3 : avec ou sans glissière
-        #layer4 : forme de la poignée pour le couvercle
-        #layer5 : donner les dimensions extérieures/internes de la boite ou donner la largeur des colonnes et des lignes
-    #précédent/suivant
     #couche 1  :  type de fermeture pour la boite (glissière, vissé (noyé/pas noyé), posé)
     def layer1(self):
-        layer1_frame=ttk.Frame(self.root,borderwidth=1,relief="solid")
-        layer1_frame.pack()
+        if hasattr(self, 'select1'):
+            self.select1_frame.destroy()
+        layer1_frame = tk.Frame(self.root, borderwidth=1, relief="solid")
+        layer1_frame.grid(column=0,row=1)
         row=0
         #Title : type de fermeture
-        text=fct.get_text("options",translations,langue)[0]
-        lay1_title=tk.Label(layer1_frame,text=text,name="lay1_title")
+        title1=fct.get_text("options",translations,langue)[0]
+        lay1_title=tk.Label(layer1_frame,text=title1)
         lay1_title.grid(row=row,column=0)
         row+=1
         options=fct.get_text("ferm_type",translations,langue)
-        #fonctions des boutons de la couche
-        #boutons "détails", affiche des détails de construction dans une fenêtre à part
-        def click_details(type) : #type = type de fermeture
-            details=tk.Toplevel()
-            details.geometry('600x400+420+75')
-            details.title("Details")
-            im_path="./images/32_fermeture_type"+str(type)+"_details_"+langue+".jpg"
-            im = PILImage.open(im_path)
-            im = im.resize((552,368))  # Resize the image with ratio 3:2
-            pho = ImageTk.PhotoImage(im)
-            label = tk.Label(details, image=pho)
-            label.image = pho # Store the reference to prevent garbage collection
-            label.pack()
-            details.mainloop()
-        #bouton ok : enregistrer l'option
-        def click1():
-            global fermeture_type
-            fermeture_type=selected_option.get()
-            #clear images and options
-            for widget in layer1_frame.winfo_children() :
-                if widget.winfo_name() != "lay1_title":
-                    widget.destroy()
-            layer1_frame.config(relief="flat")
-            #montrer l'option sélectionnée
-            selected=tk.Label(layer1_frame,text=fct.get_text("selected",translations,langue)+options[fermeture_type])
-            selected.grid(row=1,column=0)
-            #self.parameters_navigation(1)
-            if fermeture_type==2 : #si l'option vissé-noyé est sélectionné
-                self.layer1_5()
-            else : #pour les autres options
-                self.layer2()
         #choix du type de fermeture
         selected_option=tk.IntVar()
         images = []
@@ -243,74 +221,97 @@ class MyGUI :
             radio_button.grid(row=row,column=i)
         row+=1
         #details : ajouter un bouton "détails" qui ouvre une fenêtre avec des infos supplémentaire
+        #affiche des détails de construction dans une fenêtre à part
+        def click_details(type):  # type = type de fermeture
+            details = tk.Toplevel()
+            details.geometry('600x400+420+75')
+            details.title("Details")
+            im_path = "./images/32_fermeture_type" + str(type) + "_details_" + langue + ".jpg"
+            im = PILImage.open(im_path)
+            im = im.resize((552, 368))  # Resize the image with ratio 3:2
+            pho = ImageTk.PhotoImage(im)
+            label = tk.Label(details, image=pho)
+            label.image = pho  # Store the reference to prevent garbage collection
+            label.pack()
+            details.mainloop()
+        #Boutons "détails" pour afficher des infos supp sur les types de fermeture
         button_detail2=tk.Button(layer1_frame,text="Details",command=lambda:[click_details(2)])
         button_detail2.grid(row=row,column=2)
-        button_detail3=tk.Button(layer1_frame,text="Details",command=lambda:[click_details(3)])
+        button_detail3=tk.Button(layer1_frame, text="Details", command=lambda:[click_details(3)])
         button_detail3.grid(row=row,column=3)
         row+=1
-        #OK button
-        ok_button=tk.Button(layer1_frame,text="OK",command=lambda:[click1()])
-        ok_button.grid(row=row,column=0,columnspan=layer1_frame.grid_size()[0])
-    #couche 1.5 : si l'option vissé-noyée est choisie, choisir comment est noyée la vis (couvercle à ras ou piece3d à ras)
-    def layer1_5(self):
-        layer1_5_frame=tk.Frame(self.root,borderwidth=1,relief="solid")
-        layer1_5_frame.pack(padx=10, pady=10, expand=True)
-        #okbutton fonction
-        def click15(frame):
-            global couv_ras
-            couv_ras=ras.get()
-            #désafficher les images et options
-            frame.destroy()
-            #afficher l'option sélectionnée
-            layer1_5_frame=tk.Frame(self.root)
-            layer1_5_frame.pack()
-            if couv_ras :
-                text="Option 1"
+        # bouton ok : enregistrer l'option
+        def click1():
+            global fermeture_type
+            fermeture_type = selected_option.get()
+            # clear images and options
+            layer1_frame.destroy()
+            # montrer l'option sélectionnée
+            self.select1_frame = tk.Frame(self.root,name="select1")
+            self.select1_frame.grid(column=0,row=1)
+            text=title1+"\t "+fct.get_text("selected", translations, langue) + options[fermeture_type]
+            self.selected2 = tk.Label(self.select1_frame, text=text)
+            self.selected2.grid(row=1, column=0)
+            if fermeture_type == 2:
+                layer1_5(text)
             else :
-                text="Option 2"
-            selected=tk.Label(layer1_5_frame,text=text)
-            selected.grid(row=0,column=1)
-            #passer à la couche 2 (options de séparations)
-            self.layer2()
-        #image labels :  afficher les options
-        im0=PILImage.open("./images/916_fermeture_type3_det0.JPG")
-        im0 = im0.resize((225,400))
-        ph0 = ImageTk.PhotoImage(im0)
-        label0 = tk.Label(layer1_5_frame, image=ph0)
-        label0.image = ph0
-        label0.grid(row=0, column=0)
-        im0 = PILImage.open("./images/916_fermeture_type3_det1.JPG")
-        im0 = im0.resize((225, 400))
-        ph0 = ImageTk.PhotoImage(im0)
-        label0 = tk.Label(layer1_5_frame, image=ph0)
-        label0.image = ph0
-        label0.grid(row=0, column=1)
-        #radiobuttons : widget de choix
-        ras=tk.BooleanVar()
-        rb0=ttk.Radiobutton(layer1_5_frame,text="Option 1",variable=ras,value=True)
-        rb0.grid(row=1,column=0)
-        rb1=ttk.Radiobutton(layer1_5_frame,text="Option 2",variable=ras,value=False)
-        rb1.grid(row=1,column=1)
-        #ok_buttons
-        ok_button=tk.Button(layer1_5_frame,text="OK",command=lambda:[click15(layer1_5_frame)])
-        ok_button.grid(row=2,column=0,columnspan=layer1_5_frame.grid_size()[0])
+                self.parameters_navigation(1)
+        #OK button
+        ok_button=tk.Button(layer1_frame, text="OK", command=lambda:[click1()])
+        ok_button.grid(row=row, column=0, columnspan=layer1_frame.grid_size()[0])
+        # couche 1.5 : si l'option vissé-noyée est choisie, choisir comment est noyée la vis (couvercle à ras ou piece3d à ras)
+        def layer1_5(text):
+            self.layer1_5_frame=tk.Frame(self.root,borderwidth=1,relief="solid")
+            self.layer1_5_frame.grid(column=0,row=2)
+            print("hello")
+            # okbutton fonction
+            def click15():
+                global couv_ras
+                couv_ras = ras.get()
+                self.selected2.config(text=text+" - Option "+str(int(couv_ras+1)))
+                self.layer1_5_frame.destroy()
+                self.parameters_navigation(1)
+            # image labels :  afficher les options
+            im0 = PILImage.open("./images/916_fermeture_type3_det0.JPG")
+            im0 = im0.resize((225, 400))
+            ph0 = ImageTk.PhotoImage(im0)
+            label0 = tk.Label(self.layer1_5_frame, image=ph0)
+            label0.image = ph0
+            label0.grid(row=0, column=0)
+            im0 = PILImage.open("./images/916_fermeture_type3_det1.JPG")
+            im0 = im0.resize((225, 400))
+            ph0 = ImageTk.PhotoImage(im0)
+            label0 = tk.Label(self.layer1_5_frame, image=ph0)
+            label0.image = ph0
+            label0.grid(row=0, column=1)
+            # radiobuttons : widget de choix
+            ras = tk.BooleanVar()
+            rb0 = ttk.Radiobutton(self.layer1_5_frame, text="Option 1", variable=ras, value=False)
+            rb0.grid(row=1, column=0)
+            rb1 = ttk.Radiobutton(self.layer1_5_frame, text="Option 2", variable=ras, value=True)
+            rb1.grid(row=1, column=1)
+            # ok_buttons
+            ok_button = tk.Button(self.layer1_5_frame, text="OK", command=lambda: [click15()])
+            ok_button.grid(row=2, column=0, columnspan=self.layer1_5_frame.grid_size()[0])
 
     #Couche 2 :
     def layer2(self):
-        layer2_frame=tk.Frame(self.root,borderwidth=1,relief="solid")
-        layer2_frame.pack()
+        if hasattr(self, 'select2'):
+            self.select2_frame.destroy()
+        self.layer2_frame=tk.Frame(self.root,borderwidth=1,relief="solid")
+        self.layer2_frame.grid(column=0, row=2)
         row=0
         #Y a t-til des séparations ou non ?
-        question=tk.Label(layer2_frame,text=fct.get_text("options",translations,langue)[1])
+        question=tk.Label(self.layer2_frame, text=fct.get_text("options", translations, langue)[1])
         question.grid(row=row,column=0,columnspan=4)
         row+=1
-        note=tk.Label(layer2_frame,text=fct.get_text("sep",translations,langue)[2])
+        note=tk.Label(self.layer2_frame, text=fct.get_text("sep", translations, langue)[2])
         note.grid(row=row,column=0,columnspan=4)
         row+=1
         #labels :  lignes et colonnes
-        col_label=tk.Label(layer2_frame,text=fct.get_text("sep",translations,langue)[3])
+        col_label=tk.Label(self.layer2_frame, text=fct.get_text("sep", translations, langue)[3])
         col_label.grid(row=row,column=0)
-        row_label=tk.Label(layer2_frame,text=fct.get_text("sep",translations,langue)[4])
+        row_label=tk.Label(self.layer2_frame, text=fct.get_text("sep", translations, langue)[4])
         row_label.grid(row=row,column=2)
         row+=1
         #variables boolean - y-a-t-il des colonnes et/ou des lignes?
@@ -318,38 +319,40 @@ class MyGUI :
         check_row=tk.BooleanVar()
         without=fct.get_text("without",translations,langue)
         #radiobutton : avec/sans colonne
-        col_rb0=ttk.Radiobutton(layer2_frame,text=without[1],variable=check_col,value=True)
+        col_rb0=ttk.Radiobutton(self.layer2_frame, text=without[1], variable=check_col, value=True)
         col_rb0.grid(row=row,column=0)
-        col_rb1=ttk.Radiobutton(layer2_frame,text=without[0],variable=check_col,value=False)
+        col_rb1=ttk.Radiobutton(self.layer2_frame, text=without[0], variable=check_col, value=False)
         col_rb1.grid(row=row,column=1)
         #radiobutton : avec/sans ligne
-        row_rb0 = ttk.Radiobutton(layer2_frame, text=without[1], variable=check_row, value=True)
+        row_rb0 = ttk.Radiobutton(self.layer2_frame, text=without[1], variable=check_row, value=True)
         row_rb0.grid(row=row, column=2)
-        row_rb1 = ttk.Radiobutton(layer2_frame, text=without[0], variable=check_row, value=False)
+        row_rb1 = ttk.Radiobutton(self.layer2_frame, text=without[0], variable=check_row, value=False)
         row_rb1.grid(row=row, column=3)
         row+=1
         #on click
-        def click2(frame):
+        def click2():
             global separ_check_col,separ_check_row
             separ_check_col=check_col.get()
             separ_check_row=check_row.get()
             #clear frame
-            frame.destroy()
+            self.layer2_frame.destroy()
             #afficher les choix
-            layer2_frame=tk.Frame(self.root)
-            layer2_frame.pack()
-            col_label = tk.Label(layer2_frame, text=fct.get_text("sep", translations, langue)[3]+" : "+without[int(separ_check_col)])
+            self.select2_frame=tk.Frame(self.root,name="select2")
+            self.select2_frame.grid(column=0,row=2)
+            col_label = tk.Label(self.select2_frame, text=fct.get_text("sep", translations, langue)[3]+" : "+without[int(separ_check_col)])
             col_label.grid(row=0, column=0)
-            row_label = tk.Label(layer2_frame, text=fct.get_text("sep", translations, langue)[4]+" : "+without[int(separ_check_row)])
-            row_label.grid(row=0, column=1)
+            row_label = tk.Label(self.select2_frame, text=fct.get_text("sep", translations, langue)[4]+" : "+without[int(separ_check_row)])
+            row_label.grid(row=0, column=1,padx=15)
         #okbutton
-        ok_button=tk.Button(layer2_frame,text="OK",command=lambda :[click2(layer2_frame),self.layer3()])
-        ok_button.grid(row=row,column=0,columnspan=layer2_frame.grid_size()[0])
+        ok_button=tk.Button(self.layer2_frame,text="OK",command=lambda :[click2(),self.parameters_navigation(2)])
+        ok_button.grid(row=row,column=0,columnspan=self.layer2_frame.grid_size()[0])
 
     #couche 3 : choix du posage
     def layer3(self):
+        if hasattr(self, 'select3'):
+            self.select3_frame.destroy()
         layer3_frame=tk.Frame(self.root,borderwidth=1,relief="solid")
-        layer3_frame.pack()
+        layer3_frame.grid(column=0,row=3)
         row=0
         title=tk.Label(layer3_frame,text=fct.get_text("options",translations,langue)[2])
         title.grid(row=row,column=0)
@@ -420,23 +423,32 @@ class MyGUI :
             if check ==0 : #la glissière a été choisie, pas de tasseau possible
                 slide_check=True
                 tasseau_check=False
-            if check==1 : #pas de glissière, ni tasseau
+            elif check==1 : #pas de glissière, ni tasseau
                 slide_check=False
                 tasseau_check=False
-            if check ==2:#tasseau choisi
+            elif check ==2:#tasseau choisi
                 slide_check=False
                 tasseau_check=True
             layer3_frame.destroy()
-            checkmark_label = tk.Label(self.root, text="✓", font=("Arial", 16), fg="green")
+            #afficher
+            self.selected3_frame=tk.Frame(self.root,name="select3")
+            self.selected3_frame.grid(row=3,column=0)
+            checkmark_label = tk.Label(self.selected3_frame, text="✓", font=("Arial", 16), fg="green")
             checkmark_label.pack()
+            self.parameters_navigation(3)
         #ok_button
         ok_button=tk.Button(layer3_frame,text="OK",command=lambda:[click3(),self.layer4()])
         ok_button.grid(row=row,column=0,columnspan=layer3_frame.grid_size()[0])
 
     #couche 4 : choix de la forme de la poignée
     def layer4(self):
+        #######
+        # ici #
+        #######
+        if hasattr(self, 'select4'):
+            self.select4_frame.destroy()
         layer4_frame = tk.Frame(self.root, borderwidth=1, relief="solid")
-        layer4_frame.pack()
+        layer4_frame.grid(column=0,row=4)
         row = 0
         lay4_title = tk.Label(layer4_frame, text=fct.get_text("options", translations, langue)[3],name="lay4_title")
         lay4_title.grid(row=row, column=0)

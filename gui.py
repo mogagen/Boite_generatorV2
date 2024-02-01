@@ -103,6 +103,7 @@ class MyGUI :
             global projet
             projet =proj_name_var.get()
             ok_button.destroy()
+            proj_name_wid["state"] = "readonly"
             checkmark_label = tk.Label(self.root,text="✓", font=("Arial", 16), fg="green")
             checkmark_label.pack()
 
@@ -114,10 +115,66 @@ class MyGUI :
         proj_name_wid=tk.Entry(self.root,textvariable=proj_name_var)
         proj_name_wid.pack()
         #ok_button
-        ok_button=tk.Button(self.root,text="OK",command=lambda:[click(),self.parameters_choice()])
+        ok_button=tk.Button(self.root,text="OK",command=lambda:[click(),self.parameters_choice_lay0()])
         ok_button.pack()
+    #next/previous button
+    def parameters_navigation(self,current_layer):
+        nav_frame=tk.Frame(self.root,relief="solid",highlightbackground="grey",highlightcolor="grey", highlightthickness=1)
+        nav_frame.pack(expand=True,fill="x",padx=10)
+        #get translations
+        nav=fct.get_text("next",translations,langue)
+        #Previous button
+        def previous_click():
+            selected_layer=current_layer-1
+            self.get_layer(selected_layer)
+        def next_click() :
+            selected_layer=current_layer+1
+            if selected_layer <=5 :
+                self.get_layer(selected_layer)
+            else :
+                pass
+        previous_button=tk.Button(nav_frame,text=nav[1],command=lambda:[previous_click()])
+        previous_button.grid(column=0,row=0,sticky="w")
+        if current_layer<=1 :
+            previous_button.config(state="disabled")
+        next_button=tk.Button(nav_frame,text=nav[0],command=lambda:[next_click()])
+        if current_layer<5 :
+            next_button.grid(column=1,row=0,sticky="e")
+        else :
+            pass
+            #to implement  : the next step (entrez les valeurs)
+
+    #start layer
+    def get_layer(self,layer):
+        if layer== 1 :
+            self.layer1()
+        elif layer ==1.5 :
+            self.layer1_5()
+        elif layer ==2 :
+            self.layer2()
+        elif layer ==3 :
+            self.layer3()
+        elif layer == 4 :
+            self.layer4()
+        elif layer == 5 :
+            self.layer5()
+        else :
+            print("no layer"+str(layer))
     #---------------------------------------------------------------------------------
     #Selections des paramètres
+    def parameters_choice_lay0(self):
+        param_choice=tk.Frame(self.root,borderwidth=1,relief="solid")
+        param_choice.pack(padx=10,pady=10)
+        choice_label=tk.Label(param_choice,text=fct.get_text("intro",translations,langue))
+        choice_label.pack()
+        # demander le type de fermeture
+        self.layer1()
+        #layer1_5 : si vis à ras: si il ça ne doit pas dépasser
+        #layer2 :avec ou sans séparations +
+        #layer3 : avec ou sans glissière
+        #layer4 : forme de la poignée pour le couvercle
+        #layer5 : donner les dimensions extérieures/internes de la boite ou donner la largeur des colonnes et des lignes
+    #précédent/suivant
     #couche 1  :  type de fermeture pour la boite (glissière, vissé (noyé/pas noyé), posé)
     def layer1(self):
         layer1_frame=ttk.Frame(self.root,borderwidth=1,relief="solid")
@@ -155,6 +212,7 @@ class MyGUI :
             #montrer l'option sélectionnée
             selected=tk.Label(layer1_frame,text=fct.get_text("selected",translations,langue)+options[fermeture_type])
             selected.grid(row=1,column=0)
+            #self.parameters_navigation(1)
             if fermeture_type==2 : #si l'option vissé-noyé est sélectionné
                 self.layer1_5()
             else : #pour les autres options
@@ -423,7 +481,15 @@ class MyGUI :
 
     #couche 5 : format des dimensions (est-ce que l'on donne les dimensions
     def layer5(self) :
-        layer5_frame = tk.Frame(self.root, borderwidth=1, relief="solid")
+        """
+        if not hasattr(self, 'layer5_frame'):
+            self.layer5_frame = tk.Frame(self.root, borderwidth=1, relief="solid", name="layer5_frame")
+            self.layer5_frame.pack()
+        else:
+            for widget in self.layer5_frame.winfo_children():
+                widget.destroy()
+        """
+        layer5_frame=tk.Frame(self.root,borderwidth=1,relief="solid")
         layer5_frame.pack()
         row=0
         lay5_title = tk.Label(layer5_frame, text=fct.get_text("options", translations, langue)[4], name="lay5_title")
@@ -434,12 +500,12 @@ class MyGUI :
         dim_options=fct.get_text("dim_options",translations,langue)
         rb_option0=ttk.Radiobutton(layer5_frame,variable=dim_format,value=False)
         rb_option0.grid(row=row,column=0,sticky="e")
-        rb0_label = tk.Label(layer5_frame, text=dim_options[0])
+        rb0_label = tk.Label(layer5_frame, text=dim_options[0],name="0")
         rb0_label.grid(row=row,column=1,sticky="w",columnspan=2)
         row+=1
         rb_option1=ttk.Radiobutton(layer5_frame,variable=dim_format,value=True)
         rb_option1.grid(row=row,column=0,sticky="e")
-        rb1_label=tk.Label(layer5_frame,text=dim_options[1])
+        rb1_label=tk.Label(layer5_frame,text=dim_options[1],name="1")
         rb1_label.grid(row=row,column=1,columnspan=2,sticky="w")
         row+=1
         #option de la hauteur
@@ -457,67 +523,43 @@ class MyGUI :
         def click5() :
             global dim_form_lo_la,dim_form_h
             dim_form_lo_la=dim_format.get()
+            not_selected = str(int(not dim_form_lo_la))
             #
             temp=dim_h_dropdown.get()
-            if "int" in temp :
+            if "int" in temp : #temp is a string
                 dim_form_h=False
-            ###########
-            #   ICI   #
-            ###########
+            #supprimer l'option non sélectionnée et freeze le dropdown
+            for widget in layer5_frame.winfo_children() :
+                #enlever les radiobuttons
+                if isinstance(widget, ttk.Radiobutton):
+                    widget.destroy()
+                # détruire le label de l'option non sélectionnée (name des rabiobutton "1" ou "0")
+
+                elif widget.winfo_name()== not_selected :
+                    widget.destroy()
+                #désactiver la combobox
+                elif isinstance(widget, ttk.Combobox) :
+                    widget["state"] = "disabled"
+                elif isinstance(widget,tk.Button):
+                    widget.destroy()
+            self.param()
         #bouton
         ok_button=tk.Button(layer5_frame,text="OK",command=lambda:[click5()])
         ok_button.grid(row=row,column=0,columnspan=layer5_frame.grid_size()[0])
     #---------------------------------------------------------------------------------
-    def parameters_choice(self):
-        param_choice=tk.Frame(self.root,borderwidth=1,relief="solid")
-        param_choice.pack(padx=10,pady=10)
-        choice_label=tk.Label(param_choice,text=fct.get_text("intro",translations,langue))
-        choice_label.pack()
-        # demander le type de fermeture
-        self.layer1()
-        #layer1_5 : si vis à ras: si il ça ne doit pas dépasser
-        #layer2 :avec ou sans séparations +
-        #layer3 : avec ou sans glissière
-        #layer4 : forme de la poignée pour le couvercle
-        #layer5 : donner les dimensions extérieures/internes de la boite ou donner la largeur des colonnes et des lignes
-        #demander les dimensions du matériel de base
-        #selon le choix précédent
-            #demander le nombre de colonnes et de lignes et leurs largeurs + demander la hauteur int/ext
-            #demander les dimensions externes/internes
+    #
+    def end_param(self) :
+       # tk.Button(self.root,text="valider")
+        pass
     #---------------------------------------------------------------------------------
     #Paramètres des dimensions
     def param(self) :
         # Parameters frame
         param = tk.Frame(self.root, borderwidth=1, relief="solid")
-        param.grid(row=0, column=0,sticky="ew", padx=10, pady=10)
+        param.pack()
         # retrieve language lines
-        dim=fct.get_text("dim",translations,langue)
-        options_list=fct.get_text("int_ext",translations,langue)
-        format_txt=fct.get_text("format",translations,langue)
         epais = fct.get_text("ep", translations, langue)
         epais_title = fct.get_text("material", translations, langue)
-        proj_title=fct.get_text("projet",translations,langue)
-        #Project_name
-        proj_name_label=tk.Label(param,text=proj_title)
-        proj_name_label.grid(row=0)
-        proj_name_var=tk.StringVar()
-        proj_name_wid=tk.Entry(param,textvariable=proj_name_var)
-        proj_name_wid.grid(row=1)
-
-        #DIMENSIONS PARAMETERS
-        format_label=tk.Label(param,text=format_txt)
-        format_label.grid(row=2)
-        # Create labels and Combobox widgets
-        dropdown_widgets = []
-        for i in range(3):
-            dim_label = ttk.Label(param, text=dim[i],style="Text.TLabel")
-            dim_label.grid(row=3, column=i, padx=5, pady=5,sticky="w")
-
-            param_dropdown = ttk.Combobox(param, values=options_list)
-            param_dropdown.set(options_list[0])
-            param_dropdown.grid(row=4, column=i, padx=5, pady=5)
-
-            dropdown_widgets.append(param_dropdown)
         #THICKNESS VALUES
         #thickness widgets
         float_widgets = []
@@ -533,7 +575,7 @@ class MyGUI :
 
             float_widgets.append(ep_input)
         #OK BUTTON
-        param_ok_button= tk.Button(param, text="OK", command=lambda: [param_button_click(), self.dimensions_principales()])
+        param_ok_button= tk.Button(param, text="OK", command=lambda: [param_button_click()])
         param_ok_button.grid(row=8)
 
         def toggle_widget_state():
@@ -546,19 +588,11 @@ class MyGUI :
 
         def param_button_click():
             form = []
-            for dropdown in dropdown_widgets:
-                if "int" in dropdown.get():
-                    form.append(False)
-                else:
-                    form.append(True)
             global ep, eplex
             ep = float(float_widgets[0].get())
             eplex = float(float_widgets[1].get())
             global format_dim
             format_dim = [form, [ep + ep, ep + ep, ep + eplex]]
-            #project name
-            global projet
-            projet=proj_name_var.get()
             #replace ok button by a checkmark
             param_ok_button.destroy()
             checkmark_label = tk.Label(param, text="✓", font=("Arial", 16), fg="green")

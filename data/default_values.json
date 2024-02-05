@@ -5,6 +5,7 @@
   "la" : 330,
   "h" : 65,
   "ep" : 4,
+  "ep_int" : 4,
   "eplex" : 4,
   "ep_fix": 2,
   "enc_def": 20,

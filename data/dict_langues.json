@@ -2,8 +2,8 @@
     "FR": {
 		"intro": "Options de la boite",
 		"projet":"Nom du projet",
-        "dim": ["longueur", "largeur", "hauteur"],
-        "ep": ["Epaisseur des parois", "Epaisseur du couvercle"],
+        "dim": ["Longueur", "Largeur", "Hauteur"],
+        "ep": ["Epaisseur des parois extérieurs","Epaisseur des parois de séparations internes", "Epaisseur du couvercle","Dimension minimale du tasseau"],
         "material": "Dimensions du matériel de base",
 		"dim_options": ["Entrer la longeur et la largeur de la boite (la largeur des colonnes et des lignes est calculée automatiquement","Entrer la largeur des colonnes et des lignes (la largeur et la longueur de la boite sont calculés automatiqument"],
 		"format": "La hauteur donnée sera la ",
@@ -31,8 +31,8 @@
     "EN": {
 		"intro": "Box options",
 		"projet": "Project name",
-        "dim": ["length", "width", "height"],
-        "ep": ["Thickness of box walls", "Lid thickness"],
+        "dim": ["Length", "Width", "Height"],
+        "ep": ["Thickness of box walls","Thickness of internal separations" ,"Lid thickness", "Minimal dimension of tasseau"],
         "material": "Dimensions of base material",
 		"dim_options":["Enter the external length and width of the box (the width of rows and columns is calculated automatically) ","Enter the width of columns and rows (the width and length of the box is calculated automatically)"],
         "format": "The height given is the ",

@@ -586,15 +586,14 @@ class MyGUI :
         epais_title_label=tk.Label(param,text=epais_title)
         epais_title_label.grid(row=row,column=0,columnspan=len(epais))
         row+=1
-        for j,lab in enumerate(epais):
-            ep_label = tk.Label(param, text=lab)
+        for j,label in enumerate(epais):
+            ep_label = tk.Label(param, text=label)
             ep_input = ttk.Entry(param)  # Use Entry for float input
             ep_input.insert(0, str(0))  # Set initial value
             if check[j]:
                 ep_label.grid(row=row, column=j, padx=5, pady=5, sticky="w")
                 ep_input.grid(row=row+1, column=j, padx=5, pady=5)
-
-            float_widgets.append(ep_input)
+                float_widgets.append(ep_input)
         row+=2
         #OK BUTTON
         param_ok_button= tk.Button(param, text="OK", command=lambda: [param_button_click(row)])
@@ -611,25 +610,30 @@ class MyGUI :
         def param_button_click(row):
             # Message d'erreur si nécessaire
             error_text = fct.get_text("try", translations, langue)
-            error = tk.Label(param, text=error_text)
+            error = tk.Label(param, text=error_text[0])
             failed =False
             # effacer les erreurs précédentes si nécessaire
             for err in param.grid_slaves(row=row):
                 err.grid_forget()
             global material_dim
-            material_dim=[0,0,0,0]
+            material_dim=[]
             for i,entry in enumerate(float_widgets) :
                 try :
-                    material_dim[i]=float(entry.get())
+                    value=float(entry.get())
+                    if value<=0 :
+                        raise ValueError("small error")
+                    material_dim.append(value)
                 except ValueError :
                     error.grid(row=row,column=i)
                     failed = True
                     break
             if not failed :
-                self.parameters_navigation(7)
                 param_ok_button.destroy()
+                self.parameters_navigation(7)
+                toggle_widget_state()
             else :
                 return
+
     #---------------------------------------------------------------------------------------------
     #Dimensions
     #nombre de colonnes et de lignes et dimensions principales
@@ -638,30 +642,35 @@ class MyGUI :
         layer8_frame.grid(row=current_layrow, column=0)
         row=0
         dimens_title = tk.Label(layer8_frame, text=fct.get_text("dimens", translations, langue))
-        dimens_title.grid(row=row,column=0)
+        dimens_title.grid(row=row,column=0,columnspan=4)
         row+=1
         #global utilisée
         global dim_form_lo_la,separ_check_col,separ_check_row,lo,la
         #widgets list
         entry_list=[]
-        variable_list=[]
         #option 1  : lo,la donné, la_col,la_row sont calculés
-        if dim_form_lo_la :
+        if not dim_form_lo_la :
             #lo,la
-            dim=fct.get_text("dim",translations,langue)
+            dim=fct.get_text("dim",translations,langue)[0:2]
             if separ_check_col or separ_check_col :
                 sep = fct.get_text("sep", translations, langue)
                 sep_message=tk.Label(layer8_frame,text=sep[2])
-                sep_message.grid(row=row,column=0, columnspan=layer8_frame.grid_size()[0])
+                sep_message.grid(row=row,column=0,columnspan=4)
+                if separ_check_col :
+                    dim.append(sep[0])
+                if separ_check_row :
+                    dim.append(sep[1])
                 row+=1
-                dim+=sep[0:2]
             for i,text in enumerate(dim) :
-                variable_list.append(tk.StringVar)
                 label=tk.Label(layer8_frame,text=text)
                 label.grid(row=row,column=i)
-                dim_entry=tk.Label()
-            ######
-            #######
+                dim_entry=ttk.Entry(layer8_frame)
+                dim_entry.grid(row=row+1,column=i)
+                dim_entry.insert(0,"0")
+                entry_list.append(dim_entry)
+            row+=2
+            #####
+            #####
 
     """
 
